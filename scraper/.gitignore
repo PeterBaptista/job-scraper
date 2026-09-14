@@ -1,0 +1,36 @@
+# ─── Environment ────────────────────────────────────────────────────────────
+.env
+
+# ─── Python ─────────────────────────────────────────────────────────────────
+.venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+dist/
+*.egg-info/
+
+# ─── Cookies (session tokens) ────────────────────────────────────────────────
+cookies/*
+!cookies/.gitkeep
+
+# ─── OS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# Personal application answers (salary, documents) — never commit
+answers.yml
+generated_resumes/
+
+# ─── Personal data — never commit ────────────────────────────────────────────
+ME.md
+profile.local.json
+analysis.json
+*.pdf
+
+# Resume content is personal — only the placeholder template is committed
+resumes/*
+!resumes/example/

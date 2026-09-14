@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "job_user_url_idx" ON "job" USING btree ("user_id","url");

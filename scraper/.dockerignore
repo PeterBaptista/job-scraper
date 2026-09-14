@@ -1,0 +1,15 @@
+# Secrets come from compose env_file at runtime — never bake them into the image.
+.env
+
+# Session cookies are bind-mounted so they can be refreshed without a rebuild.
+cookies/*.json
+cookies/*.txt
+
+.venv/
+__pycache__/
+*.pyc
+downloaded_files/
+*.pdf
+analysis.json
+.ruff_cache/
+.pytest_cache/

@@ -1,0 +1,39 @@
+# Standard answers for application forms — copy to answers.yml and fill in.
+#
+# answers.yml is git-ignored on purpose: salary expectations and identity documents
+# do not belong in version control. Anything omitted here that a form marks as
+# REQUIRED causes the application to abort with a recorded reason, never a guess.
+
+# Salary expectation. Forms usually want a single CLT monthly figure (BRL).
+salary_expectation_brl: null        # e.g. 8000
+salary_range_brl: null              # e.g. "R$ 7.000 - R$ 9.000"
+
+# Experience. Keep truthful — these are claims made to an employer.
+years_of_experience: null           # e.g. 3
+years_react: null
+years_python: null
+years_node: null
+
+# Availability
+notice_period: null                 # e.g. "Imediata" / "30 dias"
+available_start: null               # e.g. "Imediato"
+
+# Languages (self-assessed)
+english_level: null                 # e.g. "Intermediário" / "Avançado"
+spanish_level: null
+
+# Work eligibility
+work_authorization_brazil: true
+requires_visa_sponsorship: false
+willing_to_relocate: false
+remote_only: true
+
+# Identity documents — only fill if you accept them being auto-submitted.
+# Leave null to make any form requiring them abort instead.
+cpf: null
+linkedin_url: "https://www.linkedin.com/in/your-handle/"
+github_url: "https://github.com/your-handle"
+portfolio_url: "https://your-site.dev"
+
+# Free-text fallback used when a form asks something open-ended
+cover_letter_short: null

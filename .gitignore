@@ -1,0 +1,33 @@
+# ─── Environment ────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ─── Web (Next.js) ──────────────────────────────────────────────────────────
+web/.next/
+web/out/
+web/node_modules/
+web/.pnpm-store/
+
+# ─── Scraper (Python) ───────────────────────────────────────────────────────
+scraper/.venv/
+scraper/__pycache__/
+scraper/**/__pycache__/
+scraper/**/*.py[cod]
+scraper/.ruff_cache/
+
+# Cookies contain session tokens — never commit
+scraper/cookies/*
+!scraper/cookies/.gitkeep
+
+# ─── OS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Personal data — never commit ────────────────────────────────────────────
+backups/
+scraper/ME.md
+scraper/profile.local.json
+scraper/answers.yml
+scraper/analysis.json
+scraper/**/*.pdf

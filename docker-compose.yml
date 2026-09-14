@@ -1,0 +1,89 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: jobscraper
+      POSTGRES_PASSWORD: jobscraper
+      POSTGRES_DB: jobscraper
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U jobscraper -d jobscraper']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: jobscraper
+      RABBITMQ_DEFAULT_PASS: jobscraper
+    ports:
+      - '5672:5672'   # AMQP
+      - '15672:15672' # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  scraper:
+    build: ./scraper
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    # Secrets (TELEGRAM_TOKEN / TELEGRAM_CHAT_ID) come from the file; the values
+    # below override the host-oriented URLs with in-network service names.
+    env_file:
+      - ./scraper/.env
+    environment:
+      DATABASE_URL: postgresql://jobscraper:jobscraper@postgres:5432/jobscraper
+      RABBITMQ_URL: amqp://jobscraper:jobscraper@rabbitmq:5672/
+      BROWSER_XVFB: 'true'
+      SCHEDULER_ENABLED: 'true'
+      SCHEDULER_INTERVAL_MINUTES: '60'
+      SCHEDULER_JITTER_MINUTES: '12'   # actual interval: 48-72 min
+      SCHEDULER_TIME_POSTED_SECONDS: '7200'
+      # Auto-apply. DRY RUN by default: it tailors, scores, asks for approval and
+      # fills the form, but stops before the final submit. Flip to 'false' only
+      # when you have reviewed a few dry runs.
+      APPLY_ENABLED: 'true'
+      APPLY_DRY_RUN: 'true'
+      ATS_MIN_SCORE: '40'
+      # Resume wording reaches a real employer, so it stays on the stronger model.
+      # Form field mapping is mechanical, so it runs on the cheaper one.
+      OPENAI_MODEL: 'gpt-5.1'
+      OPENAI_FORM_MODEL: 'gpt-5-mini'
+      # Telegram deep-links here instead of attaching the PDF: a document in a
+      # chat is final, and a CV should be correctable.
+      DASHBOARD_URL: 'http://localhost:3000'
+      # Companies hidden from Telegram (substring match, comma-separated).
+      # BairesDev alone was 10% of all scraped postings.
+      BLOCKED_COMPANIES: 'BairesDev'
+    volumes:
+      # Cookies live on the host so they can be refreshed without a rebuild.
+      - ./scraper/cookies:/app/cookies
+      # Tailored CVs and personal answers stay on the host.
+      - ./scraper/generated_resumes:/app/generated_resumes
+      - ./scraper/answers.yml:/app/answers.yml:ro
+      # ME.md must be writable from the container: /skill appends to it, and
+      # without this mount those edits land in the image layer, never reach the
+      # repo, and are lost on the next rebuild.
+      - ./scraper/ME.md:/app/ME.md
+    # Chrome writes heavily to /dev/shm; the 64MB default makes tabs crash.
+    shm_size: '2gb'
+    ports:
+      - '8000:8000'
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
